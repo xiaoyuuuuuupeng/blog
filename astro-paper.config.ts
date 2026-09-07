@@ -2,7 +2,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 
 export default defineAstroPaperConfig({
   site: {
-    url: "https://astro-paper.pages.dev/",
+    url: "https://blog-eta-bay-41.vercel.app/",
     title: "xiaoyuuuuuupeng",
     description: "Java、Agent 工程实践与代码审查记录。",
     author: "xiaoyuuuuuupeng",
