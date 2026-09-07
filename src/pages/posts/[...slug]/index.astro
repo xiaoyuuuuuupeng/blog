@@ -179,7 +179,7 @@ const ogImage = ogImageUrl
       const diagram = document.createElement("div");
       diagram.className =
         "mermaid not-prose my-8 overflow-x-auto rounded-lg border border-border bg-white p-4 text-black";
-      diagram.textContent = block.textContent || "";
+      diagram.textContent = block.querySelector("code")?.textContent || "";
       block.replaceWith(diagram);
       return diagram;
     });
