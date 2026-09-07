@@ -164,6 +164,30 @@ const ogImage = ogImageUrl
   <Footer />
 </PostLayout>
 
+<script type="module" is:inline data-astro-rerun>
+  import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.17.2/dist/mermaid.esm.min.mjs";
+
+  const blocks = document.querySelectorAll('pre[data-language="mermaid"]');
+  if (blocks.length) {
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: "strict",
+      theme: "neutral",
+    });
+
+    const diagrams = Array.from(blocks, block => {
+      const diagram = document.createElement("div");
+      diagram.className =
+        "mermaid not-prose my-8 overflow-x-auto rounded-lg border border-border bg-white p-4 text-black";
+      diagram.textContent = block.textContent || "";
+      block.replaceWith(diagram);
+      return diagram;
+    });
+
+    await mermaid.run({ nodes: diagrams });
+  }
+</script>
+
 <script is:inline data-astro-rerun>
   function createProgressBar() {
     const progressContainer = document.createElement("div");
