@@ -2,7 +2,7 @@
 pubDatetime: 2026-09-07T08:00:00+08:00
 modDatetime: 2026-09-08T08:00:00+08:00
 title: "AgentScope Java Review 系列"
-description: "五次真实 AgentScope Java PR 审查：从复现、调用链追踪和测试验证，到明确可合并范围与后续风险。"
+description: "AgentScope Java PR 审查：从复现、调用链追踪和测试验证，到明确可合并范围与后续风险。"
 author: "xiaoyuuuuuupeng"
 featured: true
 draft: false
@@ -13,9 +13,8 @@ tags:
   - Code Review
 ---
 
-这个系列整理了五次 AgentScope Java PR Review。重点不是复述 diff，而是记录一套可复用的方法：先建立真实调用链，再构造失败场景，核对修复边界与测试，最后把“本 PR 已解决”和“适合 follow-up”分开。
+AgentScope Java PR Review
 
-> 文章是对应审查日期的技术快照。PR 状态与代码可能继续变化，请以各篇文首的 GitHub 链接为准。
 
 ## 系列文章
 
