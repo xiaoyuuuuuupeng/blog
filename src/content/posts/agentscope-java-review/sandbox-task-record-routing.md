@@ -2,7 +2,7 @@
 pubDatetime: 2026-09-02T08:00:00+08:00
 title: "一次 Sandbox 下 Task Record 维护失败 PR 的排查与 Review 实录"
 description: "梳理 call 生命周期外的任务记录读写，验证 host workspace 路由、后台维护线程与回归测试。"
-author: "xiaoyuuuuuupeng"
+author: "Xiaoyu"
 featured: false
 draft: false
 tags:

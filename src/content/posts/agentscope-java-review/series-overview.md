@@ -3,7 +3,7 @@ pubDatetime: 2026-09-07T08:00:00+08:00
 modDatetime: 2026-09-08T08:00:00+08:00
 title: "AgentScope Java Review 系列"
 description: "AgentScope Java PR 审查：从复现、调用链追踪和测试验证，到明确可合并范围与后续风险。"
-author: "xiaoyuuuuuupeng"
+author: "Xiaoyu"
 featured: true
 draft: false
 tags:

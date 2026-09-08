@@ -2,7 +2,7 @@
 pubDatetime: 2026-08-27T08:00:00+08:00
 title: "一次 Harness Shell 管道死锁 PR 的排查与 Review 实录"
 description: "从进程管道死锁的复现出发，拆解并发 drain、超时回收、输出上限与回归测试的审查方法。"
-author: "xiaoyuuuuuupeng"
+author: "Xiaoyu"
 featured: false
 draft: false
 tags:

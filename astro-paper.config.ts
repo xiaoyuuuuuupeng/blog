@@ -3,12 +3,12 @@ import { defineAstroPaperConfig } from "./src/types/config";
 export default defineAstroPaperConfig({
   site: {
     url: "https://www.pengxiaoyu.info/",
-    title: "xiaoyuuuuuupeng",
+    title: "Xiaoyu's Blog",
     description: "Java、Agent 工程实践与代码审查记录。",
-    author: "xiaoyuuuuuupeng",
+    author: "Xiaoyu",
     profile: "https://github.com/xiaoyuuuuuupeng",
     ogImage: "xiaoyu-og.png",
-    lang: "en",
+    lang: "zh-CN",
     timezone: "Asia/Shanghai",
     dir: "ltr",
   },

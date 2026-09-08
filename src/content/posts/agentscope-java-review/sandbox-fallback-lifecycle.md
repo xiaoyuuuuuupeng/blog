@@ -2,7 +2,7 @@
 pubDatetime: 2026-08-27T09:00:00+08:00
 title: "一次 Sandbox Fallback 并发生命周期 PR 的排查与 Review 实录"
 description: "围绕多 session 并发，分析 sandbox fallback 的绑定、释放顺序与仍需 follow-up 的隔离边界。"
-author: "xiaoyuuuuuupeng"
+author: "Xiaoyu"
 featured: false
 draft: false
 tags:
