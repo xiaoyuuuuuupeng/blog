@@ -120,74 +120,65 @@ const ogImage = ogImageUrl
   <main
     id="main-content"
     class:list={[
-      "mx-auto w-full px-4",
-      showSidebarToc ? "max-w-3xl xl:max-w-6xl" : "max-w-app",
+      "app-layout",
       { "mt-8": !config.features.showBackButton },
+      showSidebarToc && "has-sidebar-toc-layout",
     ]}
     data-pagefind-body
   >
-    <div
+    <h1
+      style={{ viewTransitionName: toTransitionName(post.id) }}
+      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
+    >
+      {title}
+    </h1>
+
+    <div class="my-2 flex items-center gap-2">
+      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+      <span
+        aria-hidden="true"
+        class:list={[
+          "text-muted-foreground max-sm:hidden",
+          { hidden: !config.features.editPost?.enabled || hideEditPost },
+        ]}
+      >
+        |
+      </span>
+      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+    </div>
+
+    <article
+      id="article"
       class:list={[
-        showSidebarToc &&
-          "xl:grid xl:grid-cols-[minmax(0,48rem)_14rem] xl:items-start xl:justify-center xl:gap-10",
+        "mt-8 w-full",
+        "app-prose max-w-app",
+        "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+        showSidebarToc && "has-sidebar-toc",
       ]}
     >
-      <div class="min-w-0 max-w-3xl xl:mx-0 mx-auto w-full">
-        <h1
-          style={{ viewTransitionName: toTransitionName(post.id) }}
-          class="text-accent inline-block text-2xl font-bold sm:text-3xl"
-        >
-          {title}
-        </h1>
+      <Content />
+    </article>
 
-        <div class="my-2 flex items-center gap-2">
-          <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-          <span
-            aria-hidden="true"
-            class:list={[
-              "text-muted-foreground max-sm:hidden",
-              { hidden: !config.features.editPost?.enabled || hideEditPost },
-            ]}
-          >
-            |
-          </span>
-          <EditPost {hideEditPost} {post} class="max-sm:hidden" />
-        </div>
+    <hr class="my-8 border-dashed" />
 
-        <article
-          id="article"
-          class:list={[
-            "mt-8 w-full",
-            "app-prose max-w-app",
-            "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
-            showSidebarToc && "has-sidebar-toc",
-          ]}
-        >
-          <Content />
-        </article>
+    <EditPost class="sm:hidden" {hideEditPost} {post} />
 
-        <hr class="my-8 border-dashed" />
+    <BackToTopButton />
 
-        <EditPost class="sm:hidden" {hideEditPost} {post} />
+    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
+      {tags.map(tag => (
+        <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
+      ))}
+    </ul>
 
-        <BackToTopButton />
+    <ShareLinks />
 
-        <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-          {tags.map(tag => (
-            <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
-          ))}
-        </ul>
+    <hr class="my-8 border-dashed" />
 
-        <ShareLinks />
-
-        <hr class="my-8 border-dashed" />
-
-        <AdjacentPostNav {prevPost} {nextPost} />
-      </div>
-
-      {showSidebarToc && <TableOfContents headings={headings} />}
-    </div>
+    <AdjacentPostNav {prevPost} {nextPost} />
   </main>
+
+  {showSidebarToc && <TableOfContents headings={headings} />}
   <Footer />
 </PostLayout>
 
