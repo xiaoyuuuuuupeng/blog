@@ -2,7 +2,7 @@
 pubDatetime: 2026-08-28T08:00:00+08:00
 title: "一次 Harness 异步 Memory Flush PR 的排查与 Review 实录"
 description: "从响应尾部阻塞切入，审查异步 memory flush 的队列上限、丢弃语义、关闭行为与测试边界。"
-author: "xiaoyuuuuuupeng"
+author: "Xiaoyu"
 featured: false
 draft: false
 tags:
