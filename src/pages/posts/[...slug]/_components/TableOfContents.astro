@@ -1,0 +1,113 @@
+---
+import type { MarkdownHeading } from "astro";
+
+type Props = {
+  headings: MarkdownHeading[];
+};
+
+const { headings } = Astro.props;
+
+const toc = headings.filter(
+  heading =>
+    (heading.depth === 2 || heading.depth === 3) &&
+    heading.slug !== "table-of-contents" &&
+    heading.text.toLowerCase() !== "table of contents"
+);
+---
+
+{
+  toc.length > 1 && (
+    <aside
+      id="toc-sidebar"
+      class="toc-sidebar not-prose hidden xl:block"
+      aria-label="目录"
+    >
+      <nav class="sticky top-24 max-h-[calc(100vh-8rem)] overflow-y-auto pe-1">
+        <p class="mb-3 text-xs font-semibold tracking-wider text-foreground/40 uppercase">
+          目录
+        </p>
+        <ul class="space-y-1 border-s border-border">
+          {
+            toc.map(heading => (
+              <li>
+                <a
+                  class:list={[
+                    "toc-link block border-s-2 border-transparent py-0.5 leading-snug text-foreground/55 no-underline transition-colors hover:text-foreground",
+                    heading.depth === 2
+                      ? "ps-3 text-[0.8125rem]"
+                      : "ps-5 text-xs",
+                  ]}
+                  href={`#${heading.slug}`}
+                  data-toc-link={heading.slug}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </aside>
+  )
+}
+
+<style is:global>
+  #toc-sidebar .toc-link.toc-active {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+</style>
+
+<script is:inline data-astro-rerun>
+  function initSidebarToc() {
+    const root = document.getElementById("toc-sidebar");
+    if (!root) return;
+
+    const links = Array.from(root.querySelectorAll("[data-toc-link]"));
+    if (!links.length) return;
+
+    const headingEls = links
+      .map(link => {
+        const id = link.getAttribute("data-toc-link");
+        return id ? document.getElementById(id) : null;
+      })
+      .filter(Boolean);
+
+    if (!headingEls.length) return;
+
+    function setActive(id) {
+      for (const link of links) {
+        link.classList.toggle(
+          "toc-active",
+          link.getAttribute("data-toc-link") === id
+        );
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]?.target?.id) {
+          setActive(visible[0].target.id);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -65% 0px",
+        threshold: [0, 1],
+      }
+    );
+
+    for (const heading of headingEls) {
+      observer.observe(heading);
+    }
+
+    if (headingEls[0]?.id) {
+      setActive(headingEls[0].id);
+    }
+  }
+
+  initSidebarToc();
+</script>
