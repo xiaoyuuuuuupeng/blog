@@ -35,5 +35,18 @@
 }
 
 :target {
-  scroll-margin-block: 1rem;
+  scroll-margin-block: 4rem;
+}
+
+/* Hide inline remark-toc on large screens when sidebar TOC is present */
+@media (min-width: 1280px) {
+  #article.has-sidebar-toc details:has(> summary) {
+    display: none;
+  }
+
+  #article.has-sidebar-toc h2#table-of-contents,
+  #article.has-sidebar-toc h2#table-of-contents + ul,
+  #article.has-sidebar-toc h2#table-of-contents + ol {
+    display: none;
+  }
 }

@@ -14,6 +14,7 @@ import ShareLinks from "./_components/ShareLinks.astro";
 import BackButton from "./_components/BackButton.astro";
 import BackToTopButton from "./_components/BackToTopButton.astro";
 import AdjacentPostNav from "./_components/AdjacentPostNav.astro";
+import TableOfContents from "./_components/TableOfContents.astro";
 import config from "@/config";
 
 export async function getStaticPaths() {
@@ -73,7 +74,15 @@ const {
   hideEditPost,
 } = post.data;
 
-const { Content } = await render(post);
+const { Content, headings } = await render(post);
+
+const tocHeadings = headings.filter(
+  heading =>
+    (heading.depth === 2 || heading.depth === 3) &&
+    heading.slug !== "table-of-contents" &&
+    heading.text.toLowerCase() !== "table of contents"
+);
+const showSidebarToc = tocHeadings.length > 1;
 
 let ogImageUrl: string | undefined;
 
@@ -110,56 +119,74 @@ const ogImage = ogImageUrl
 
   <main
     id="main-content"
-    class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
+    class:list={[
+      "mx-auto w-full px-4",
+      showSidebarToc ? "max-w-3xl xl:max-w-6xl" : "max-w-app",
+      { "mt-8": !config.features.showBackButton },
+    ]}
     data-pagefind-body
   >
-    <h1
-      style={{ viewTransitionName: toTransitionName(post.id) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
-    >
-      {title}
-    </h1>
-
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
-      <span
-        aria-hidden="true"
-        class:list={[
-          "text-muted-foreground max-sm:hidden",
-          { hidden: !config.features.editPost?.enabled || hideEditPost },
-        ]}
-      >
-        |
-      </span>
-      <EditPost {hideEditPost} {post} class="max-sm:hidden" />
-    </div>
-
-    <article
-      id="article"
+    <div
       class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
-        "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+        showSidebarToc &&
+          "xl:grid xl:grid-cols-[minmax(0,48rem)_14rem] xl:items-start xl:justify-center xl:gap-10",
       ]}
     >
-      <Content />
-    </article>
+      <div class="min-w-0 max-w-3xl xl:mx-0 mx-auto w-full">
+        <h1
+          style={{ viewTransitionName: toTransitionName(post.id) }}
+          class="text-accent inline-block text-2xl font-bold sm:text-3xl"
+        >
+          {title}
+        </h1>
 
-    <hr class="my-8 border-dashed" />
+        <div class="my-2 flex items-center gap-2">
+          <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+          <span
+            aria-hidden="true"
+            class:list={[
+              "text-muted-foreground max-sm:hidden",
+              { hidden: !config.features.editPost?.enabled || hideEditPost },
+            ]}
+          >
+            |
+          </span>
+          <EditPost {hideEditPost} {post} class="max-sm:hidden" />
+        </div>
 
-    <EditPost class="sm:hidden" {hideEditPost} {post} />
+        <article
+          id="article"
+          class:list={[
+            "mt-8 w-full",
+            "app-prose max-w-app",
+            "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
+            showSidebarToc && "has-sidebar-toc",
+          ]}
+        >
+          <Content />
+        </article>
 
-    <BackToTopButton />
+        <hr class="my-8 border-dashed" />
 
-    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
-    </ul>
+        <EditPost class="sm:hidden" {hideEditPost} {post} />
 
-    <ShareLinks />
+        <BackToTopButton />
 
-    <hr class="my-8 border-dashed" />
+        <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
+          {tags.map(tag => (
+            <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />
+          ))}
+        </ul>
 
-    <AdjacentPostNav {prevPost} {nextPost} />
+        <ShareLinks />
+
+        <hr class="my-8 border-dashed" />
+
+        <AdjacentPostNav {prevPost} {nextPost} />
+      </div>
+
+      {showSidebarToc && <TableOfContents headings={headings} />}
+    </div>
   </main>
   <Footer />
 </PostLayout>
