@@ -40,13 +40,9 @@
 
 /* Hide inline remark-toc on large screens when sidebar TOC is present */
 @media (min-width: 1280px) {
-  #article.has-sidebar-toc details:has(> summary) {
-    display: none;
-  }
-
   #article.has-sidebar-toc h2#table-of-contents,
-  #article.has-sidebar-toc h2#table-of-contents + ul,
-  #article.has-sidebar-toc h2#table-of-contents + ol {
+  #article.has-sidebar-toc h2#table-of-contents + p,
+  #article.has-sidebar-toc details:has(> summary) {
     display: none;
   }
 }
