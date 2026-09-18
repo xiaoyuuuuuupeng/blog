@@ -1,7 +1,9 @@
 import { defineCollection } from "astro:content";
 import { z } from "astro/zod";
 import { glob } from "astro/loaders";
+import { notionPageSchema } from "@astro-notion/loader";
 import config from "@/config";
+import { notionBlogLoader } from "@/loaders/notionBlogLoader";
 
 export const BLOG_PATH = "src/content/posts";
 
@@ -21,7 +23,19 @@ const posts = defineCollection({
       canonicalURL: z.string().optional(),
       hideEditPost: z.boolean().optional(),
       timezone: z.string().optional(),
+      category: z.string().optional(),
     }),
+});
+
+/** Notion CMS source. Soft-disabled when NOTION_TOKEN / NOTION_DATABASE_ID are unset. */
+const notionPosts = defineCollection({
+  loader: notionBlogLoader({
+    imageSavePath: "assets/images/notion",
+  }),
+  // Loose page schema: property names vary; adaptation happens in getAllPosts().
+  schema: notionPageSchema({
+    properties: z.record(z.string(), z.any()),
+  }),
 });
 
 const pages = defineCollection({
@@ -34,4 +48,4 @@ const pages = defineCollection({
   }),
 });
 
-export const collections = { posts, pages };
+export const collections = { posts, notionPosts, pages };

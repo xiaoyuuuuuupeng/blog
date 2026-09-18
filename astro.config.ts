@@ -3,6 +3,7 @@ import {
   envField,
   svgoOptimizer,
 } from "astro/config";
+import vercel from "@astrojs/vercel";
 import tailwindcss from "@tailwindcss/vite";
 import mdx from "@astrojs/mdx";
 import sitemap from "@astrojs/sitemap";
@@ -20,6 +21,8 @@ import config from "./astro-paper.config";
 
 export default defineConfig({
   site: config.site.url,
+  // Keep pages static; only `/api/redeploy` opts into on-demand rendering.
+  adapter: vercel(),
   integrations: [
     mdx(),
     sitemap({
@@ -54,6 +57,14 @@ export default defineConfig({
       ],
     },
   },
+  image: {
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "**.amazonaws.com",
+      },
+    ],
+  },
   vite: {
     plugins: [tailwindcss()],
   },
@@ -62,6 +73,28 @@ export default defineConfig({
       PUBLIC_GOOGLE_SITE_VERIFICATION: envField.string({
         access: "public",
         context: "client",
+        optional: true,
+      }),
+      NOTION_TOKEN: envField.string({
+        access: "secret",
+        context: "server",
+        optional: true,
+      }),
+      NOTION_DATABASE_ID: envField.string({
+        access: "secret",
+        context: "server",
+        optional: true,
+      }),
+      /** Secret shared with Notion automation / manual curl callers. */
+      REDEPLOY_SECRET: envField.string({
+        access: "secret",
+        context: "server",
+        optional: true,
+      }),
+      /** Vercel → Settings → Git → Deploy Hooks URL (POST). */
+      VERCEL_DEPLOY_HOOK_URL: envField.string({
+        access: "secret",
+        context: "server",
         optional: true,
       }),
     },
