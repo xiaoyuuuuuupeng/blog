@@ -1,4 +1,4 @@
-import type { CollectionEntry } from "astro:content";
+import type { BlogPost } from "./blogPosts";
 import { postFilter } from "./postFilter";
 
 /**
@@ -7,7 +7,7 @@ import { postFilter } from "./postFilter";
  *
  * Note: filtering respects drafts and scheduled posts via `postFilter()`.
  */
-export function getSortedPosts(posts: CollectionEntry<"posts">[]) {
+export function getSortedPosts(posts: BlogPost[]) {
   return posts
     .filter(postFilter)
     .sort(

@@ -1,8 +1,8 @@
 import type { APIRoute } from "astro";
-import { getCollection } from "astro:content";
 import { fontData, experimental_getFontFileURL } from "astro:assets";
 import satori from "satori";
 import sharp from "sharp";
+import { getAllPosts } from "@/utils/blogPosts";
 import { getFontPathByWeight } from "@/utils/getFontPathByWeight";
 import { getPostSlug } from "@/utils/getPostPaths";
 import config from "@/config";
@@ -12,8 +12,8 @@ export async function getStaticPaths() {
     return [];
   }
 
-  const posts = await getCollection("posts").then(p =>
-    p.filter(({ data }) => !data.draft && !data.ogImage)
+  const posts = (await getAllPosts()).filter(
+    ({ data }) => !data.draft && !data.ogImage
   );
 
   return posts.map(post => ({

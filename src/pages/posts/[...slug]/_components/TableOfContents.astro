@@ -1,0 +1,176 @@
+---
+import type { MarkdownHeading } from "astro";
+
+type Props = {
+  headings: MarkdownHeading[];
+};
+
+const { headings } = Astro.props;
+
+const toc = headings.filter(
+  heading =>
+    (heading.depth === 2 || heading.depth === 3) &&
+    heading.slug !== "table-of-contents" &&
+    heading.text.toLowerCase() !== "table of contents"
+);
+---
+
+{
+  toc.length > 1 && (
+    <aside id="toc-sidebar" class="toc-sidebar not-prose" aria-label="目录">
+      <nav class="toc-nav">
+        <p class="toc-label">目录</p>
+        <ul class="toc-list">
+          {
+            toc.map(heading => (
+              <li>
+                <a
+                  class:list={["toc-link", heading.depth === 3 && "toc-h3"]}
+                  href={`#${heading.slug}`}
+                  data-toc-link={heading.slug}
+                >
+                  {heading.text}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+      </nav>
+    </aside>
+  )
+}
+
+<style is:global>
+  /* Keep article centered; float TOC in the right margin on wide screens. */
+  #toc-sidebar {
+    display: none;
+  }
+
+  @media (min-width: 1280px) {
+    #toc-sidebar {
+      display: block;
+      position: fixed;
+      z-index: 30;
+      top: 6rem;
+      /* max-w-3xl = 48rem, so article right edge is 50% + 24rem */
+      left: calc(50% + 25rem);
+      width: 13rem;
+      max-height: calc(100vh - 8rem);
+      overflow-y: auto;
+      padding-inline-end: 0.25rem;
+      opacity: 0.75;
+      transition: opacity 0.2s ease;
+    }
+
+    #toc-sidebar:hover,
+    #toc-sidebar:focus-within {
+      opacity: 1;
+    }
+  }
+
+  /* If the right margin is too narrow, hide TOC instead of shifting layout */
+  @media (min-width: 1280px) and (max-width: 1399px) {
+    #toc-sidebar {
+      width: 11rem;
+      left: calc(50% + 24.5rem);
+    }
+  }
+
+  .toc-label {
+    margin-bottom: 0.75rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: color-mix(in srgb, var(--color-foreground) 40%, transparent);
+  }
+
+  .toc-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-inline-start: 1px solid var(--color-border);
+  }
+
+  .toc-link {
+    display: block;
+    padding-block: 0.2rem;
+    padding-inline-start: 0.75rem;
+    border-inline-start: 2px solid transparent;
+    margin-inline-start: -1px;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+    color: color-mix(in srgb, var(--color-foreground) 55%, transparent);
+    text-decoration: none;
+    word-break: break-word;
+    transition: color 0.15s ease;
+  }
+
+  .toc-link.toc-h3 {
+    padding-inline-start: 1.25rem;
+    font-size: 0.75rem;
+  }
+
+  .toc-link:hover {
+    color: var(--color-foreground);
+  }
+
+  #toc-sidebar .toc-link.toc-active {
+    border-inline-start-color: var(--color-accent);
+    color: var(--color-accent);
+    font-weight: 500;
+  }
+</style>
+
+<script is:inline data-astro-rerun>
+  function initSidebarToc() {
+    const root = document.getElementById("toc-sidebar");
+    if (!root) return;
+
+    const links = Array.from(root.querySelectorAll("[data-toc-link]"));
+    if (!links.length) return;
+
+    const headingEls = links
+      .map(link => {
+        const id = link.getAttribute("data-toc-link");
+        return id ? document.getElementById(id) : null;
+      })
+      .filter(Boolean);
+
+    if (!headingEls.length) return;
+
+    function setActive(id) {
+      for (const link of links) {
+        link.classList.toggle(
+          "toc-active",
+          link.getAttribute("data-toc-link") === id
+        );
+      }
+    }
+
+    const observer = new IntersectionObserver(
+      entries => {
+        const visible = entries
+          .filter(entry => entry.isIntersecting)
+          .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+        if (visible[0]?.target?.id) {
+          setActive(visible[0].target.id);
+        }
+      },
+      {
+        rootMargin: "-20% 0px -65% 0px",
+        threshold: [0, 1],
+      }
+    );
+
+    for (const heading of headingEls) {
+      observer.observe(heading);
+    }
+
+    if (headingEls[0]?.id) {
+      setActive(headingEls[0].id);
+    }
+  }
+
+  initSidebarToc();
+</script>

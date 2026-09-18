@@ -1,11 +1,11 @@
 import rss from "@astrojs/rss";
-import { getCollection } from "astro:content";
+import { getAllPosts } from "@/utils/blogPosts";
 import { getSortedPosts } from "@/utils/getSortedPosts";
 import { getPostUrl } from "@/utils/getPostPaths";
 import config from "@/config";
 
 export async function GET() {
-  const posts = await getCollection("posts");
+  const posts = await getAllPosts();
   const sortedPosts = getSortedPosts(posts);
 
   return rss({
