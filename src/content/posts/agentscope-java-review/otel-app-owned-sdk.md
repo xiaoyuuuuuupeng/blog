@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-09-29T16:00:00+08:00
-title: "Tracing Middleware 支持应用自有 OpenTelemetry SDK"
+title: "as-java-review: Tracing Middleware 支持应用自有 OpenTelemetry SDK"
 description: "复盘 AgentScope Java PR #3250：OtelTracingMiddleware 为何被 GlobalOpenTelemetry 绑死，以及注入调用方 SDK 后如何保持 lazy global 与 Reactor hook 语义。"
 author: "Xiaoyu"
 featured: false

@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-08-24T10:00:00+08:00
-title: "修复并发下的 Sandbox 按 call 绑定隔离"
+title: "as-java-review: 修复并发下的 Sandbox 按 call 绑定隔离"
 description: "复盘 AgentScope Java PR #2675：agent 级单槽 sandbox 在跨 session 并发下如何互相踩踏，以及如何把绑定迁到 per-call RuntimeContext。"
 author: "Xiaoyu"
 featured: false

@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-08-27T09:00:00+08:00
-title: "修复并发调用下的 Sandbox Fallback 生命周期"
+title: "as-java-review: 修复并发调用下的 Sandbox Fallback 生命周期"
 description: "围绕多 session 并发，分析 sandbox fallback 的绑定、释放顺序与仍需 follow-up 的隔离边界。"
 author: "Xiaoyu"
 featured: false

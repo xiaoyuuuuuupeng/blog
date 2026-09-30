@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-09-17T16:00:00+08:00
-title: "让 Prompt 暴露正确的 Session Workspace 路径"
+title: "as-java-review: 让 Prompt 暴露正确的 Session Workspace 路径"
 description: "复盘 AgentScope Java PR #3020：session isolation 下 prompt 仍广告 base workspace，模型按错路径写产物，以及如何与 NamespaceFactory 对齐。"
 author: "Xiaoyu"
 featured: false

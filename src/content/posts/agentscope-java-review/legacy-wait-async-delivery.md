@@ -1,7 +1,7 @@
 ---
 pubDatetime: 2026-08-22T08:00:00+08:00
 modDatetime: 2026-09-30T12:00:00+08:00
-title: "修复 legacy wait 丢失异步任务完成通知"
+title: "as-java-review: 修复 legacy wait 丢失异步任务完成通知"
 description: "复盘 AgentScope Java PR #2797：legacy wait_async_results 为何只盯 inbox，以及回退 TaskRepository 后仍未覆盖的 terminal-but-undelivered 缺口。"
 author: "Xiaoyu"
 featured: false

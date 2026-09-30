@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-09-20T12:00:00+08:00
-title: "修复迁移 version=0 行上的幽灵 CAS 冲突"
+title: "as-java-review: 修复迁移 version=0 行上的幽灵 CAS 冲突"
 description: "复盘 AgentScope Java PR #3165：ensureVersionColumn 用 DEFAULT 0 回填，与 getVersioned 的「行不存在」哨兵撞车，以及 INSERT 冲突后自愈到 version 1 的修法。"
 author: "Xiaoyu"
 featured: false

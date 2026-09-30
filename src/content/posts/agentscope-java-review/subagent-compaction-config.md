@@ -1,7 +1,7 @@
 ---
 pubDatetime: 2026-09-23T10:00:00+08:00
 modDatetime: 2026-09-30T12:00:00+08:00
-title: "声明式 Subagent 的独立 Compaction 配置"
+title: "as-java-review: 声明式 Subagent 的独立 Compaction 配置"
 description: "复盘 AgentScope Java PR #2378：声明式 Subagent 为何只能用默认 compaction，以及 Java Builder 与 YAML 三态语义如何补齐 override / inherit / disable。"
 author: "Xiaoyu"
 featured: false
