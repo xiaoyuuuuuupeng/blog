@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-08-27T08:00:00+08:00
-title: "一次 Harness Shell 管道死锁 PR 的排查与 Review 实录"
+title: "修复 Harness Shell 管道死锁"
 description: "从进程管道死锁的复现出发，拆解并发 drain、超时回收、输出上限与回归测试的审查方法。"
 author: "Xiaoyu"
 featured: false
@@ -329,7 +329,7 @@ void execute_outputLargerThanOsPipeBufferCompletesWithoutDeadlock(@TempDir Path 
 
 我们称之为 **A / B** 两个缺口（不是 Git 分支名，是审查项编号）。
 
-#### A. join 超时后仍可能并发写 BAOS
+#### A. join 超时不能保证输出采集完成
 
 ```java
 private static void joinQuietly(Thread t) {
@@ -342,7 +342,7 @@ private static void joinQuietly(Thread t) {
 // 随后立刻：stdoutBuf.toString(outputCharset)
 ```
 
-`join(5s)` 到期时 drainer **可能还活着**，主线程却对非线程安全的 `ByteArrayOutputStream` 做 `toString()` → 数据竞争。
+`join(5s)` 到期时 drainer **可能还活着**。`ByteArrayOutputStream.write` 与 `toString` 都是 synchronized，因此这里不是 buffer 的数据竞争；风险是 `toString()` 只得到当时的快照，后续读到的输出不会包含在已返回的字符串里。
 
 `ShellCommandTool` 更稳：用 `Future.get(timeout)`，超时 `cancel(true)` 并**丢弃**未完成结果，主线程不碰还在写的 buffer。
 
@@ -406,7 +406,7 @@ if (t.isAlive()) {
 - **成功**：拿到的是已完成、不可变的 String，没有并发写
 - **超时**：`cancel(true)`，返回 `""`，**不用**未完成 buffer
 
-`join` + 共享 BAOS 则是：超时后主线程和 drainer 可能**同时**碰同一块可变内存。
+`join` + 共享 BAOS 则是：超时后 drainer 可能还未读完，主线程取到的同步快照不代表完整输出。`Future.get` 成功才有采集完成的保证；超时则明确丢弃未完成结果。
 
 对齐的是 **ShellCommandTool 的收尾安全语义**，不是要求 harness 整类重写。
 

@@ -1,6 +1,6 @@
 ---
 pubDatetime: 2026-09-08T08:00:00+08:00
-title: "声明式 Subagent 的 Hook 继承：一次 AgentScope Java PR Review"
+title: "声明式 Subagent 继承父 Agent Hooks"
 description: "复盘 AgentScope Java PR #2996：声明式 Subagent 为什么会绕过父 Agent Hook，以及继承 Hook 后如何继续守住工具白名单。"
 author: "Xiaoyu"
 featured: false
