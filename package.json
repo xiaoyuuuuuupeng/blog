@@ -7,7 +7,8 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build": "astro check && astro build && pagefind --site dist && node -e \"require('node:fs').cpSync('dist/pagefind', 'public/pagefind', { recursive: true })\"",
+    "check": "astro check",
+    "build": "astro build && pagefind --site .vercel/output/static && node -e \"require('node:fs').cpSync('.vercel/output/static/pagefind', 'public/pagefind', { recursive: true })\"",
     "preview": "astro preview",
     "sync": "astro sync",
     "astro": "astro",

@@ -40,8 +40,8 @@ pnpm dev
 | --- | --- |
 | `title` | 标题 |
 | `slug` | 建议填写；为空时会用标题自动生成 URL slug |
-| `status` | 仅 `Published` 会发布 |
-| `type` | 仅 `Post` 会发布 |
+| `status` | 仅 `Published` 会发布（Notion 里是 **Select**，不是 Status 类型） |
+| `type` | 仅 `Post` 会发布（Select） |
 | `tags` | 标签 |
 | `summary` | 列表摘要 / description |
 | `date` | 发布日期（用于 `pubDatetime`，不是导入时间） |

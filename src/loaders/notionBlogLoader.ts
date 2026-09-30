@@ -130,9 +130,10 @@ export function notionBlogLoader(
           options.filter ??
           ({
             and: [
+              // Notion DB uses Select (not Status) for `status`.
               {
                 property: "status",
-                status: { equals: "Published" },
+                select: { equals: "Published" },
               },
               {
                 property: "type",

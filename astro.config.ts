@@ -23,6 +23,10 @@ export default defineConfig({
   site: config.site.url,
   // Keep pages static; only `/api/redeploy` opts into on-demand rendering.
   adapter: vercel(),
+  build: {
+    // Lower concurrency to reduce peak memory on Vercel (Notion + images).
+    concurrency: 2,
+  },
   integrations: [
     mdx(),
     sitemap({
