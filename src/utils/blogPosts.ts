@@ -126,33 +126,43 @@ function resolvePubDatetime(
 
 function resolveFeatured(
   properties: Record<string, unknown>,
-  title: string
+  title: string,
+  slug: string,
+  pageId: string
 ): boolean {
+  const normalizedTitle = title.replace(/[\s\-_/]+/g, "").toLowerCase();
+  const normalizedSlug = slug.replace(/[\s\-_/]+/g, "").toLowerCase();
+  const id = pageId.replace(/-/g, "").toLowerCase();
+
+  // Known featured Notion posts (title in DB may be just "one-logger").
+  if (
+    normalizedSlug === "onelogger" ||
+    normalizedTitle === "onelogger" ||
+    normalizedTitle === "自研框架onelogger" ||
+    id.startsWith("73f3072dfde44c85a740df4e9f787715")
+  ) {
+    return true;
+  }
+
   const raw = pickProp(properties, [
     "featured",
     "Featured",
     "精选",
     "Feature",
   ]);
-  if (raw != null && raw !== "") {
-    if (typeof raw === "boolean") return raw;
-    if (typeof raw === "object" && raw !== null) {
-      const obj = raw as Record<string, unknown>;
-      if ("checkbox" in obj) return Boolean(obj.checkbox);
-      if ("select" in obj) {
-        const name = asString(obj.select).toLowerCase();
-        if (["true", "yes", "featured", "精选"].includes(name)) return true;
-        if (["false", "no", ""].includes(name)) return false;
-      }
-    }
-    const text = asString(raw).toLowerCase();
-    if (["true", "yes", "1", "featured", "精选"].includes(text)) return true;
-    if (["false", "no", "0"].includes(text)) return false;
-  }
+  if (raw == null || raw === "") return false;
 
-  // Keep known framework intro featured even if Notion checkbox is missing.
-  const normalized = title.replace(/[\s\-_/]+/g, "").toLowerCase();
-  return normalized === "自研框架one-logger";
+  if (typeof raw === "boolean") return raw;
+  if (typeof raw === "object" && raw !== null) {
+    const obj = raw as Record<string, unknown>;
+    if ("checkbox" in obj) return Boolean(obj.checkbox);
+    if ("select" in obj) {
+      const name = asString(obj.select).toLowerCase();
+      return ["true", "yes", "featured", "精选"].includes(name);
+    }
+  }
+  const text = asString(raw).toLowerCase();
+  return ["true", "yes", "1", "featured", "精选"].includes(text);
 }
 
 function adaptNotionPost(entry: NotionPost): AdaptedNotionPost | null {
@@ -212,6 +222,12 @@ function adaptNotionPost(entry: NotionPost): AdaptedNotionPost | null {
   const modDatetime =
     parseDate((entry.data as Record<string, unknown>).last_edited_time) ?? null;
 
+  // Prefer a clearer homepage title when Notion title is the short slug form.
+  const displayTitle =
+    title.trim().toLowerCase() === "one-logger"
+      ? "自研框架 one-logger"
+      : title;
+
   return {
     ...entry,
     id: slug,
@@ -220,11 +236,11 @@ function adaptNotionPost(entry: NotionPost): AdaptedNotionPost | null {
       author: config.site.author,
       pubDatetime,
       modDatetime,
-      title,
-      featured: resolveFeatured(properties, title),
+      title: displayTitle,
+      featured: resolveFeatured(properties, title, slug, entry.id),
       draft: false,
       tags: tags.length > 0 ? tags : ["others"],
-      description: summary || title,
+      description: summary || displayTitle,
       hideEditPost: true,
       ...(category ? { category } : {}),
     },
