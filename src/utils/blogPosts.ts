@@ -124,6 +124,37 @@ function resolvePubDatetime(
   return new Date(0);
 }
 
+function resolveFeatured(
+  properties: Record<string, unknown>,
+  title: string
+): boolean {
+  const raw = pickProp(properties, [
+    "featured",
+    "Featured",
+    "精选",
+    "Feature",
+  ]);
+  if (raw != null && raw !== "") {
+    if (typeof raw === "boolean") return raw;
+    if (typeof raw === "object" && raw !== null) {
+      const obj = raw as Record<string, unknown>;
+      if ("checkbox" in obj) return Boolean(obj.checkbox);
+      if ("select" in obj) {
+        const name = asString(obj.select).toLowerCase();
+        if (["true", "yes", "featured", "精选"].includes(name)) return true;
+        if (["false", "no", ""].includes(name)) return false;
+      }
+    }
+    const text = asString(raw).toLowerCase();
+    if (["true", "yes", "1", "featured", "精选"].includes(text)) return true;
+    if (["false", "no", "0"].includes(text)) return false;
+  }
+
+  // Keep known framework intro featured even if Notion checkbox is missing.
+  const normalized = title.replace(/[\s\-_/]+/g, "").toLowerCase();
+  return normalized === "自研框架one-logger";
+}
+
 function adaptNotionPost(entry: NotionPost): AdaptedNotionPost | null {
   const properties = (entry.data.properties ?? {}) as Record<string, unknown>;
 
@@ -190,7 +221,7 @@ function adaptNotionPost(entry: NotionPost): AdaptedNotionPost | null {
       pubDatetime,
       modDatetime,
       title,
-      featured: false,
+      featured: resolveFeatured(properties, title),
       draft: false,
       tags: tags.length > 0 ? tags : ["others"],
       description: summary || title,

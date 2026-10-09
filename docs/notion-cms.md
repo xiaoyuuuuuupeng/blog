@@ -46,6 +46,7 @@ pnpm dev
 | `summary` | 列表摘要 / description |
 | `date` | 发布日期（用于 `pubDatetime`，不是导入时间） |
 | `category` | 可选 |
+| `featured` | 可选 Checkbox；勾选后出现在首页 Featured（`自研框架 one-logger` 默认精选） |
 | `password` | 有值则**不发布**（第一阶段不实现前端解锁） |
 
 ## 4. Vercel 部署
