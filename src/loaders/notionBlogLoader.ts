@@ -3,10 +3,15 @@ import {
   notionLoader,
   type NotionLoaderOptions,
 } from "@astro-notion/loader";
+import { existsSync } from "node:fs";
+import { resolve } from "node:path";
 import { getLocalEnv } from "@/utils/loadLocalEnv";
 import { createNotionRateLimitedFetch } from "@/utils/notionRateLimitedFetch";
 
 type StoreEntry = Parameters<LoaderContext["store"]["set"]>[0];
+
+const VIRTUAL_CONTENT_ROOT = "src/content/notion";
+const DEFAULT_IMAGE_SAVE_PATH = "assets/images/notion";
 
 function env(name: string): string | undefined {
   return getLocalEnv(name);
@@ -94,6 +99,49 @@ function shouldSkipEntry(
   return false;
 }
 
+/** Resolve loader asset paths (relative to virtual Notion content root). */
+function resolveNotionAssetPath(rel: string): string {
+  return resolve(process.cwd(), VIRTUAL_CONTENT_ROOT, rel.replace(/\\/g, "/"));
+}
+
+/**
+ * Vercel (and fresh CI) often restores the Astro content store from build
+ * cache while gitignored Notion image files are absent. Cached digests then
+ * skip re-render, leaving broken assetImports → ImageNotFound at build.
+ * Drop those store entries so the inner loader re-downloads images.
+ */
+function invalidateEntriesWithMissingAssets(
+  store: LoaderContext["store"],
+  logger: LoaderContext["logger"]
+): void {
+  let cleared = 0;
+
+  for (const id of [...store.keys()]) {
+    const entry = store.get(id);
+    if (!entry) continue;
+
+    const fromImports = entry.assetImports ?? [];
+    const fromRendered =
+      (
+        entry.rendered?.metadata as { imagePaths?: string[] } | undefined
+      )?.imagePaths ?? [];
+    const paths = [...fromImports, ...fromRendered].filter(Boolean);
+    if (paths.length === 0) continue;
+
+    const missing = paths.some(rel => !existsSync(resolveNotionAssetPath(rel)));
+    if (!missing) continue;
+
+    store.delete(id);
+    cleared += 1;
+  }
+
+  if (cleared > 0) {
+    logger.info(
+      `Cleared ${cleared} Notion cache entr${cleared === 1 ? "y" : "ies"} with missing local images (will re-download)`
+    );
+  }
+}
+
 /**
  * Prefer keeping Notion page UUIDs as store ids so `@astro-notion/loader`
  * can reuse digests/cache. URL slugs are applied later in `getAllPosts()`.
@@ -117,13 +165,15 @@ export function notionBlogLoader(
         return;
       }
 
+      invalidateEntriesWithMissingAssets(context.store, context.logger);
+
       // Narrow the query to Published posts when possible (fewer block fetches).
       const filteredOptions: Partial<NotionLoaderOptions> = {
         ...options,
         auth,
         database_id,
         collectionName: "notion-posts",
-        imageSavePath: options.imageSavePath ?? "assets/images/notion",
+        imageSavePath: options.imageSavePath ?? DEFAULT_IMAGE_SAVE_PATH,
         // Queue Notion HTTP calls (~3 req/s) even when the loader renders in parallel.
         fetch: options.fetch ?? createNotionRateLimitedFetch(),
         filter:

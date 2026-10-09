@@ -136,6 +136,10 @@ Notion API 大约每秒 3 次请求。本项目通过：
 
 若仍出现限流：不要反复 `pnpm sync --force`，等 1–2 分钟后再 `pnpm sync` / `pnpm dev`。
 
+### Vercel 图片缓存
+
+Notion 图片下载到 `src/assets/images/notion/`（已 gitignore）。若构建报 `ImageNotFound`，通常是内容层缓存恢复了图片路径、本地文件却不在。loader 会在同步前清掉「引用了缺失图片」的缓存条目并重新下载。若仍失败，在 Vercel 对该次部署勾选 **Clear cache** 后 Redeploy。
+
 ## 后续（未做）
 
 - 密码文前端解锁
